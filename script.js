@@ -1750,8 +1750,6 @@ window.addEventListener("touchstart", (e) => {
 let width = 0;
 let flagDown = false;
 
-console.log(pointers);
-
 const updateCube = () => {
   if (flagDown) {
     width -= 3;
