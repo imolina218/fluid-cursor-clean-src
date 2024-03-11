@@ -1539,7 +1539,8 @@ function render(target) {
   }
 
   if (!config.TRANSPARENT) drawColor(target, normalizeColor(config.BACK_COLOR));
-  if (target == null && config.TRANSPARENT) drawCheckerboard(target);
+  // Important
+  //   if (target == null && config.TRANSPARENT) drawCheckerboard(target);
   drawDisplay(target);
 }
 
@@ -1549,14 +1550,15 @@ function drawColor(target, color) {
   blit(target);
 }
 
-function drawCheckerboard(target) {
-  checkerboardProgram.bind();
-  gl.uniform1f(
-    checkerboardProgram.uniforms.aspectRatio,
-    canvas.width / canvas.height
-  );
-  blit(target);
-}
+//Important
+// function drawCheckerboard(target) {
+//   checkerboardProgram.bind();
+//   gl.uniform1f(
+//     checkerboardProgram.uniforms.aspectRatio,
+//     canvas.width / canvas.height
+//   );
+//   blit(target);
+// }
 
 function drawDisplay(target) {
   let width = target == null ? gl.drawingBufferWidth : target.width;
