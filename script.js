@@ -1410,7 +1410,8 @@ function updateKeywords() {
 
 updateKeywords();
 initFramebuffers();
-multipleSplats(parseInt(Math.random() * 20) + 5);
+// Muktiple random splats
+// multipleSplats(parseInt(Math.random() * 20) + 5);
 
 let lastUpdateTime = Date.now();
 let colorUpdateTimer = 0.0;
@@ -1752,7 +1753,8 @@ function splat(x, y, dx, dy, color) {
   velocity.swap();
 
   gl.uniform1i(splatProgram.uniforms.uTarget, dye.read.attach(0));
-  gl.uniform3f(splatProgram.uniforms.color, color.r, color.g, color.b);
+  //   gl.uniform3f(splatProgram.uniforms.color, color.r, color.g, color.b);
+  gl.uniform3f(splatProgram.uniforms.color, 0.0457, 0.0039, 0.0369, 0);
   blit(dye.write);
   dye.swap();
 }
@@ -1773,6 +1775,7 @@ window.addEventListener("mousedown", (e) => {
   updatePointerDownData(pointer, -1, posX, posY);
 });
 
+// Listener to set mouse position
 window.addEventListener("mousemove", (e) => {
   let pointer = pointers[0];
   if (!pointer.down) return;
@@ -1797,45 +1800,40 @@ window.addEventListener("touchstart", (e) => {
   }
 });
 
+// SECOND EMMITER
+let width = 0;
+let flagDown = false;
+
 console.log(pointers);
 
-// SECOND EMMITER
-// let width = 0;
-// let flagDown = false;
+const updateCube = () => {
+  if (flagDown) {
+    width -= 3;
+  }
+  if (!flagDown) {
+    width += 3;
+  }
 
-// const updateCube = () => {
-//   if (flagDown) {
-//     width -= 3;
-//   }
-//   if (!flagDown) {
-//     width += 3;
-//   }
+  if (flagDown && width === -225) {
+    flagDown = false;
+  }
+  if (!flagDown && width === 1125) {
+    flagDown = true;
+  }
 
-//   if (flagDown && width === -450) {
-//     flagDown = false;
-//   }
-//   if (!flagDown && width === 750) {
-//     flagDown = true;
-//   }
+  updatePointerMoveData(pointers[1], window.innerWidth, width);
 
-//   pointers[1].id = 1;
-//   pointers[1].moved = true;
-//   pointers[1].dx = window.innerWidth / 2 - pointers[1].x;
-//   pointers[1].dy = width - pointers[1].y;
-//   pointers[1].x = window.innerWidth / 2;
-//   pointers[1].y = width;
+  requestAnimationFrame(updateCube);
+};
+updateCube();
 
-//   requestAnimationFrame(updateCube);
-// };
-// updateCube();
-
-// window.addEventListener("mousemove", (e) => {
-//   pointers[0].moved = pointers[0].down;
-//   pointers[0].dx = (e.offsetX - pointers[0].x) * 10.0;
-//   pointers[0].dy = (e.offsetY - pointers[0].y) * 10.0;
-//   pointers[0].x = e.offsetX;
-//   pointers[0].y = e.offsetY;
-// });
+window.addEventListener("mousemove", (e) => {
+  pointers[0].moved = pointers[0].down;
+  pointers[0].dx = (e.offsetX - pointers[0].x) * 10.0;
+  pointers[0].dy = (e.offsetY - pointers[0].y) * 10.0;
+  pointers[0].x = e.offsetX;
+  pointers[0].y = e.offsetY;
+});
 
 canvas.addEventListener(
   "touchmove",
@@ -1907,10 +1905,11 @@ function correctDeltaY(delta) {
 }
 
 function generateColor() {
-  let c = HSVtoRGB(Math.random(), 1.0, 1.0);
-  c.r *= 0.15;
-  c.g *= 0.15;
-  c.b *= 0.15;
+  let c = HSVtoRGB(0.8, 0.6, 0.4);
+  //   let c = HSVtoRGB(Math.random(), 1.0, 1.0);
+  //   c.r *= 0.15;
+  //   c.g *= 0.15;
+  //   c.b *= 0.15;
   return c;
 }
 
