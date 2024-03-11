@@ -1,58 +1,4 @@
-/*
-MIT License
-
-Copyright (c) 2017 Pavel Dobryakov
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
 "use strict";
-
-// Mobile promo section
-
-const promoPopup = document.getElementsByClassName("promo")[0];
-const promoPopupClose = document.getElementsByClassName("promo-close")[0];
-
-if (isMobile()) {
-  setTimeout(() => {
-    promoPopup.style.display = "table";
-  }, 20000);
-}
-
-promoPopupClose.addEventListener("click", (e) => {
-  promoPopup.style.display = "none";
-});
-
-const appleLink = document.getElementById("apple_link");
-appleLink.addEventListener("click", (e) => {
-  ga("send", "event", "link promo", "app");
-  window.open("https://apps.apple.com/us/app/fluid-simulation/id1443124993");
-});
-
-const googleLink = document.getElementById("google_link");
-googleLink.addEventListener("click", (e) => {
-  ga("send", "event", "link promo", "app");
-  window.open(
-    "https://play.google.com/store/apps/details?id=games.paveldogreat.fluidsimfree"
-  );
-});
-
 // Simulation section
 
 const canvas = document.getElementsByTagName("canvas")[0];
@@ -63,12 +9,12 @@ let config = {
   DYE_RESOLUTION: 1024,
   CAPTURE_RESOLUTION: 512,
   DENSITY_DISSIPATION: 0.998,
-  VELOCITY_DISSIPATION: 0.04,
+  VELOCITY_DISSIPATION: 0.02,
   PRESSURE: 0.8,
   PRESSURE_ITERATIONS: 2,
-  CURL: 2,
-  SPLAT_RADIUS: 0.45,
-  SPLAT_FORCE: 1600,
+  CURL: 4,
+  SPLAT_RADIUS: 0.95,
+  SPLAT_FORCE: 2000,
   SHADING: true,
   COLORFUL: false,
   COLOR_UPDATE_SPEED: 10,
@@ -221,156 +167,156 @@ function supportRenderTextureFormat(gl, internalFormat, format, type) {
   return status == gl.FRAMEBUFFER_COMPLETE;
 }
 
-function startGUI() {
-  var gui = new dat.GUI({ width: 300 });
-  gui
-    .add(config, "DYE_RESOLUTION", {
-      high: 1024,
-      medium: 512,
-      low: 256,
-      "very low": 128,
-    })
-    .name("quality")
-    .onFinishChange(initFramebuffers);
-  gui
-    .add(config, "SIM_RESOLUTION", { 32: 32, 64: 64, 128: 128, 256: 256 })
-    .name("sim resolution")
-    .onFinishChange(initFramebuffers);
-  gui.add(config, "DENSITY_DISSIPATION", 0, 4.0).name("density diffusion");
-  gui.add(config, "VELOCITY_DISSIPATION", 0, 4.0).name("velocity diffusion");
-  gui.add(config, "PRESSURE", 0.0, 1.0).name("pressure");
-  gui.add(config, "CURL", 0, 50).name("vorticity").step(1);
-  gui.add(config, "SPLAT_RADIUS", 0.01, 1.0).name("splat radius");
-  gui.add(config, "SHADING").name("shading").onFinishChange(updateKeywords);
-  gui.add(config, "COLORFUL").name("colorful");
-  gui.add(config, "PAUSED").name("paused").listen();
+// function startGUI() {
+//   var gui = new dat.GUI({ width: 300 });
+//   gui
+//     .add(config, "DYE_RESOLUTION", {
+//       high: 1024,
+//       medium: 512,
+//       low: 256,
+//       "very low": 128,
+//     })
+//     .name("quality")
+//     .onFinishChange(initFramebuffers);
+//   gui
+//     .add(config, "SIM_RESOLUTION", { 32: 32, 64: 64, 128: 128, 256: 256 })
+//     .name("sim resolution")
+//     .onFinishChange(initFramebuffers);
+//   gui.add(config, "DENSITY_DISSIPATION", 0, 4.0).name("density diffusion");
+//   gui.add(config, "VELOCITY_DISSIPATION", 0, 4.0).name("velocity diffusion");
+//   gui.add(config, "PRESSURE", 0.0, 1.0).name("pressure");
+//   gui.add(config, "CURL", 0, 50).name("vorticity").step(1);
+//   gui.add(config, "SPLAT_RADIUS", 0.01, 1.0).name("splat radius");
+//   gui.add(config, "SHADING").name("shading").onFinishChange(updateKeywords);
+//   gui.add(config, "COLORFUL").name("colorful");
+//   gui.add(config, "PAUSED").name("paused").listen();
 
-  gui
-    .add(
-      {
-        fun: () => {
-          splatStack.push(parseInt(Math.random() * 20) + 5);
-        },
-      },
-      "fun"
-    )
-    .name("Random splats");
+//   gui
+//     .add(
+//       {
+//         fun: () => {
+//           splatStack.push(parseInt(Math.random() * 20) + 5);
+//         },
+//       },
+//       "fun"
+//     )
+//     .name("Random splats");
 
-  let bloomFolder = gui.addFolder("Bloom");
-  bloomFolder
-    .add(config, "BLOOM")
-    .name("enabled")
-    .onFinishChange(updateKeywords);
-  bloomFolder.add(config, "BLOOM_INTENSITY", 0.1, 2.0).name("intensity");
-  bloomFolder.add(config, "BLOOM_THRESHOLD", 0.0, 1.0).name("threshold");
+//   let bloomFolder = gui.addFolder("Bloom");
+//   bloomFolder
+//     .add(config, "BLOOM")
+//     .name("enabled")
+//     .onFinishChange(updateKeywords);
+//   bloomFolder.add(config, "BLOOM_INTENSITY", 0.1, 2.0).name("intensity");
+//   bloomFolder.add(config, "BLOOM_THRESHOLD", 0.0, 1.0).name("threshold");
 
-  let sunraysFolder = gui.addFolder("Sunrays");
-  sunraysFolder
-    .add(config, "SUNRAYS")
-    .name("enabled")
-    .onFinishChange(updateKeywords);
-  sunraysFolder.add(config, "SUNRAYS_WEIGHT", 0.3, 1.0).name("weight");
+//   let sunraysFolder = gui.addFolder("Sunrays");
+//   sunraysFolder
+//     .add(config, "SUNRAYS")
+//     .name("enabled")
+//     .onFinishChange(updateKeywords);
+//   sunraysFolder.add(config, "SUNRAYS_WEIGHT", 0.3, 1.0).name("weight");
 
-  let captureFolder = gui.addFolder("Capture");
-  captureFolder.addColor(config, "BACK_COLOR").name("background color");
-  captureFolder.add(config, "TRANSPARENT").name("transparent");
-  captureFolder.add({ fun: captureScreenshot }, "fun").name("take screenshot");
+//   let captureFolder = gui.addFolder("Capture");
+//   captureFolder.addColor(config, "BACK_COLOR").name("background color");
+//   captureFolder.add(config, "TRANSPARENT").name("transparent");
+//   captureFolder.add({ fun: captureScreenshot }, "fun").name("take screenshot");
 
-  let github = gui
-    .add(
-      {
-        fun: () => {
-          window.open("https://github.com/PavelDoGreat/WebGL-Fluid-Simulation");
-          ga("send", "event", "link button", "github");
-        },
-      },
-      "fun"
-    )
-    .name("Github");
-  github.__li.className = "cr function bigFont";
-  github.__li.style.borderLeft = "3px solid #8C8C8C";
-  let githubIcon = document.createElement("span");
-  github.domElement.parentElement.appendChild(githubIcon);
-  githubIcon.className = "icon github";
+//   let github = gui
+//     .add(
+//       {
+//         fun: () => {
+//           window.open("https://github.com/PavelDoGreat/WebGL-Fluid-Simulation");
+//           ga("send", "event", "link button", "github");
+//         },
+//       },
+//       "fun"
+//     )
+//     .name("Github");
+//   github.__li.className = "cr function bigFont";
+//   github.__li.style.borderLeft = "3px solid #8C8C8C";
+//   let githubIcon = document.createElement("span");
+//   github.domElement.parentElement.appendChild(githubIcon);
+//   githubIcon.className = "icon github";
 
-  let twitter = gui
-    .add(
-      {
-        fun: () => {
-          ga("send", "event", "link button", "twitter");
-          window.open("https://twitter.com/PavelDoGreat");
-        },
-      },
-      "fun"
-    )
-    .name("Twitter");
-  twitter.__li.className = "cr function bigFont";
-  twitter.__li.style.borderLeft = "3px solid #8C8C8C";
-  let twitterIcon = document.createElement("span");
-  twitter.domElement.parentElement.appendChild(twitterIcon);
-  twitterIcon.className = "icon twitter";
+//   let twitter = gui
+//     .add(
+//       {
+//         fun: () => {
+//           ga("send", "event", "link button", "twitter");
+//           window.open("https://twitter.com/PavelDoGreat");
+//         },
+//       },
+//       "fun"
+//     )
+//     .name("Twitter");
+//   twitter.__li.className = "cr function bigFont";
+//   twitter.__li.style.borderLeft = "3px solid #8C8C8C";
+//   let twitterIcon = document.createElement("span");
+//   twitter.domElement.parentElement.appendChild(twitterIcon);
+//   twitterIcon.className = "icon twitter";
 
-  let discord = gui
-    .add(
-      {
-        fun: () => {
-          ga("send", "event", "link button", "discord");
-          window.open("https://discordapp.com/invite/CeqZDDE");
-        },
-      },
-      "fun"
-    )
-    .name("Discord");
-  discord.__li.className = "cr function bigFont";
-  discord.__li.style.borderLeft = "3px solid #8C8C8C";
-  let discordIcon = document.createElement("span");
-  discord.domElement.parentElement.appendChild(discordIcon);
-  discordIcon.className = "icon discord";
+//   let discord = gui
+//     .add(
+//       {
+//         fun: () => {
+//           ga("send", "event", "link button", "discord");
+//           window.open("https://discordapp.com/invite/CeqZDDE");
+//         },
+//       },
+//       "fun"
+//     )
+//     .name("Discord");
+//   discord.__li.className = "cr function bigFont";
+//   discord.__li.style.borderLeft = "3px solid #8C8C8C";
+//   let discordIcon = document.createElement("span");
+//   discord.domElement.parentElement.appendChild(discordIcon);
+//   discordIcon.className = "icon discord";
 
-  let app = gui
-    .add(
-      {
-        fun: () => {
-          ga("send", "event", "link button", "app");
-          window.open("http://onelink.to/5b58bn");
-        },
-      },
-      "fun"
-    )
-    .name("Check out mobile app");
-  app.__li.className = "cr function appBigFont";
-  app.__li.style.borderLeft = "3px solid #00FF7F";
-  let appIcon = document.createElement("span");
-  app.domElement.parentElement.appendChild(appIcon);
-  appIcon.className = "icon app";
+//   let app = gui
+//     .add(
+//       {
+//         fun: () => {
+//           ga("send", "event", "link button", "app");
+//           window.open("http://onelink.to/5b58bn");
+//         },
+//       },
+//       "fun"
+//     )
+//     .name("Check out mobile app");
+//   app.__li.className = "cr function appBigFont";
+//   app.__li.style.borderLeft = "3px solid #00FF7F";
+//   let appIcon = document.createElement("span");
+//   app.domElement.parentElement.appendChild(appIcon);
+//   appIcon.className = "icon app";
 
-  if (isMobile()) gui.close();
-}
+//   if (isMobile()) gui.close();
+// }
 
 function isMobile() {
   return /Mobi|Android/i.test(navigator.userAgent);
 }
 
-function captureScreenshot() {
-  let res = getResolution(config.CAPTURE_RESOLUTION);
-  let target = createFBO(
-    res.width,
-    res.height,
-    ext.formatRGBA.internalFormat,
-    ext.formatRGBA.format,
-    ext.halfFloatTexType,
-    gl.NEAREST
-  );
-  render(target);
+// function captureScreenshot() {
+//   let res = getResolution(config.CAPTURE_RESOLUTION);
+//   let target = createFBO(
+//     res.width,
+//     res.height,
+//     ext.formatRGBA.internalFormat,
+//     ext.formatRGBA.format,
+//     ext.halfFloatTexType,
+//     gl.NEAREST
+//   );
+//   render(target);
 
-  let texture = framebufferToTexture(target);
-  texture = normalizeTexture(texture, target.width, target.height);
+//   let texture = framebufferToTexture(target);
+//   texture = normalizeTexture(texture, target.width, target.height);
 
-  let captureCanvas = textureToCanvas(texture, target.width, target.height);
-  let datauri = captureCanvas.toDataURL();
-  downloadURI("fluid.png", datauri);
-  URL.revokeObjectURL(datauri);
-}
+//   let captureCanvas = textureToCanvas(texture, target.width, target.height);
+//   let datauri = captureCanvas.toDataURL();
+//   downloadURI("fluid.png", datauri);
+//   URL.revokeObjectURL(datauri);
+// }
 
 function framebufferToTexture(target) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
@@ -1754,7 +1700,7 @@ function splat(x, y, dx, dy, color) {
 
   gl.uniform1i(splatProgram.uniforms.uTarget, dye.read.attach(0));
   //   gl.uniform3f(splatProgram.uniforms.color, color.r, color.g, color.b);
-  gl.uniform3f(splatProgram.uniforms.color, 0.0457, 0.0039, 0.0369, 0);
+  gl.uniform3f(splatProgram.uniforms.color, 0.01, 0.001, 0.01, 0);
   blit(dye.write);
   dye.swap();
 }
